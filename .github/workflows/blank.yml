@@ -2,7 +2,7 @@ name: Build and push Docker image to Docker Hub
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -33,6 +33,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./nginx
+        file: ./nginx/Dockerfile  # 🛠 Aquí estás especificando el Dockerfile
         push: true
         tags: |
           rcastro95/app-html-devops:latest
