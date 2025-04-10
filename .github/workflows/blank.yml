@@ -23,6 +23,6 @@ jobs:
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
-       context:
+       context: ./nginx
        push: true
        tags: rcastro95/app-html-devops:latest
