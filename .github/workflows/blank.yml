@@ -32,8 +32,8 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: ./nginx
-        file: ./nginx/Dockerfile  # 🛠 Aquí estás especificando el Dockerfile
+        context: ./nginx  # Esto es correcto, apunta a la carpeta nginx
+        file: ./nginx/Dockerfile  # Esto también está bien, asegura que apunte correctamente
         push: true
         tags: |
           rcastro95/app-html-devops:latest
