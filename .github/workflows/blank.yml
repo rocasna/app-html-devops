@@ -32,7 +32,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: .  # Esto es correcto, apunta a la carpeta nginx
+        context: .
         push: true
         tags: |
           rcastro95/app-html-devops:latest
@@ -44,3 +44,13 @@ jobs:
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+    - name: Notify Slack on success
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "✅ Docker image *rcastro95/app-html-devops* fue construida y subida exitosamente. Commit: `${{ github.sha }}`"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
