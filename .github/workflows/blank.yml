@@ -65,4 +65,5 @@ jobs:
           "text": ":x: *¡El workflow falló!* :boom:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ github.sha }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
         }
     env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}    
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
