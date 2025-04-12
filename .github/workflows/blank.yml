@@ -29,6 +29,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          rcastro95/app-html-devops:latest
+          rcastro95/app-html-devops:${{ github.sha }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
     - name: Build and scan image
       uses: dentsusoken/build-and-scan-image@main
       with:
@@ -47,22 +63,6 @@ jobs:
         trivy-vuln-type: "os,library"
         trivy-ignore-unfixed: "false"
         snyk-enable: "true"
-
-    - name: Build and push
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          rcastro95/app-html-devops:latest
-          rcastro95/app-html-devops:${{ github.sha }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Notify Slack on success
       if: success()
