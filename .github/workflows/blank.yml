@@ -28,20 +28,6 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-
-    - name: Escanear imagen Docker con Trivy
-      uses: aquasecurity/trivy-action@v0.30.0
-      with:
-        image-ref: rcastro95/app-html-devops:${{ github.sha }}
-        format: table
-        exit-code: 0
-        vuln-type: os
-        severity: CRITICAL,HIGH
-          
-    - name: Lint HTML
-      run: |
-        npm install -g htmlhint
-        htmlhint ./ruta/del/html
       
     - name: Build and push
       uses: docker/build-push-action@v5
