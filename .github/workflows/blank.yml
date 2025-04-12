@@ -39,9 +39,9 @@ jobs:
         severity: CRITICAL,HIGH
           
     - name: Lint HTML
-    run: |
-      npm install -g htmlhint
-      htmlhint ./ruta/del/html
+      run: |
+        npm install -g htmlhint
+        htmlhint ./ruta/del/html
       
     - name: Build and push
       uses: docker/build-push-action@v5
