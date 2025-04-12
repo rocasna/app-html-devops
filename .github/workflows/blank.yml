@@ -62,7 +62,7 @@ jobs:
         trivy-severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
         trivy-vuln-type: "os,library"
         trivy-ignore-unfixed: "false"
-        snyk-enable: "true"
+        snyk-enable: "false"
 
     - name: Notify Slack on success
       if: success()
