@@ -46,24 +46,24 @@ jobs:
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Notify Slack on success
-    if: success()
-    uses: slackapi/slack-github-action@v1.24.0
-    with:
-      payload: |
-        {
-          "text": ":rocket: *¡Nueva imagen Docker publicada!* :whale:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ github.sha }}`\n\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|🔍 Ver commit>\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
-        }
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: success()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": ":rocket: *¡Nueva imagen Docker publicada!* :whale:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ github.sha }}`\n\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|🔍 Ver commit>\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Notify Slack on failure
-    if: failure()
-    uses: slackapi/slack-github-action@v1.24.0
-    with:
-      payload: |
-        {
-          "text": ":x: *¡El workflow falló!* :boom:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ github.sha }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
-        }
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: failure()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": ":x: *¡El workflow falló!* :boom:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ github.sha }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     
