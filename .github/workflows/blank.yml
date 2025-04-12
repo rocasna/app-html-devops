@@ -30,8 +30,9 @@ jobs:
           ${{ runner.os }}-buildx-
 
     - name: Escanear imagen Docker con Trivy
-      uses: aquasecurity/trivy-action@v0.30.0
+      uses: aquasecurity/trivy-action@v0.16.2
       with:
+        trivy-version: "0.45.0"  # o la versión que quieras
         image-ref: rcastro95/app-html-devops:${{ github.sha }}
         format: table
         exit-code: 0
