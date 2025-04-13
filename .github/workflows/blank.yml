@@ -65,7 +65,7 @@ jobs:
         trivy-ignore-unfixed: "false"
         snyk-enable: "false"
 
-    - name: SSH Deploy
+    - name: Execute kubectl commands
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
@@ -74,8 +74,12 @@ jobs:
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
           echo "Conectado a la VM. Ejecutando comandos kubectl..."
-          cd /home/projects/k8s/app1 # O el directorio donde tienes tus archivos de Kubernetes
-          microk8s.kubectl get deployment
+          echo "Current PATH: $PATH"
+          which microk8s
+          which kubectl
+          cd /home/projects/k8s/app1
+          microk8s kubectl get deployment # Intenta con la sintaxis correcta
+          # kubectl get deployment # Intenta con el comando estándar
 
     - name: Notify Slack on success
       if: success()
