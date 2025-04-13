@@ -80,6 +80,7 @@ jobs:
           which microk8s
           which kubectl
           cd /home/projects/k8s/app1
+          sleep 10
           microk8s kubectl config current-context # Verifica el contexto dentro de la acción
           microk8s kubectl get deployment -n default app-html-devops-deployment
           microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
