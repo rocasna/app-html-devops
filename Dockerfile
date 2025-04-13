@@ -1,20 +1,20 @@
-FROM nginx:stable-alpine3.20-slim
+FROM nginx:stable-bookworm-perl
 
 ENV DOCKER_CONTENT_TRUST=1
 
-# Copiar archivos
 COPY ./app/index.html /usr/share/nginx/html/
 COPY ./app/favicon.ico /usr/share/nginx/html/
 
-# Crear directorios de cache y asignar permisos
-RUN mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp && \
-    chown -R nginx:nginx /var/cache/nginx
+RUN adduser --system --uid 1000 --no-create-home --disabled-login --group github_action
 
-# Crear usuario no-root
-RUN adduser -D -h /bin/bash github_action
+RUN chown -R github_action:github_action /var/cache/nginx \
+    && chown -R github_action:github_action /var/log/nginx \
+    && chown -R github_action:github_action /etc/nginx/conf.d \
+    && touch /var/run/nginx.pid \
+    && chown -R github_action:github_action /var/run/nginx.pid
 
-# Cambiar a usuario no-root
-#USER github_action
+USER github_action
 
-# Configurar la comprobación de salud
 HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
