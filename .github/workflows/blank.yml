@@ -73,7 +73,11 @@ jobs:
         key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
-          "microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:3dbe473dab8f1212db549fe7eec23a9e13c9b7d5"
+          echo "Conectado a la VM. Ejecutando comandos kubectl..."
+          cd /home/projects/k8s/app1 # O el directorio donde tienes tus archivos de Kubernetes
+          kubectl --kubeconfig config.gcp apply -f deployment-app.yaml # Ejemplo: aplicar un deployment
+          kubectl --kubeconfig config.gcp get pods # Ejemplo: obtener la lista de pods
+          # Añade aquí todos los comandos kubectl que necesites ejecutar
 
     - name: Notify Slack on success
       if: success()
