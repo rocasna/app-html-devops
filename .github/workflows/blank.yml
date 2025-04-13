@@ -74,7 +74,7 @@ jobs:
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
           cd /home/projects/k8s/app1
-          kubectl set image deployment.v1.apps/nginx-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
+          kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
 
     - name: Notify Slack on success
       if: success()
