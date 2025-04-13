@@ -1,21 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: app-html-devops-deployment
   labels:
-    app: app-html-devops
+    app: app-html
+    dep: devops
+    env: dev
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: app-html-devops
+      app: app-html
+      dep: devops
+      env: dev
   template:
     metadata:
       labels:
-        app: app-html-devops
+        app: app-html
+        dep: devops
+        env: dev
     spec:
       containers:
-      - name: nginx
+      - name: app-html-devops
         image: rcastro95/app-html-devops:83fc7738420db0511751de1daea510ff8a930978
         ports:
         - containerPort: 80
