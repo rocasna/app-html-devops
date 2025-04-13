@@ -73,7 +73,7 @@ jobs:
         key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
-          microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:3dbe473dab8f1212db549fe7eec23a9e13c9b7d5
+          "microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:3dbe473dab8f1212db549fe7eec23a9e13c9b7d5"
 
     - name: Notify Slack on success
       if: success()
