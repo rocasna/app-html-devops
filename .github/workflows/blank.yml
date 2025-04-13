@@ -75,7 +75,7 @@ jobs:
         script: |
           echo "Conectado a la VM. Ejecutando comandos kubectl..."
           cd /home/projects/k8s/app1 # O el directorio donde tienes tus archivos de Kubernetes
-          microk8s status
+          microk8s.kubectl get deployment
 
     - name: Notify Slack on success
       if: success()
