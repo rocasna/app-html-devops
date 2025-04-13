@@ -33,7 +33,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        dockerfile: ./docker/Dockerfile
+        file: ./docker/Dockerfile
         push: true
         tags: |
           rcastro95/app-html-devops:latest
