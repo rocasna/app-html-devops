@@ -73,13 +73,8 @@ jobs:
         key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
-          # Aquí van los comandos que quieres ejecutar en tu VM
-          echo "Desplegando nueva versión..."
-          # Ejemplo:
-          pwd
-          host
-          whoami
-          hostname
+          cd /home/projects/k8s/app1
+          kubectl set image deployment.v1.apps/nginx-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
 
     - name: Notify Slack on success
       if: success()
