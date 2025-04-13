@@ -75,9 +75,7 @@ jobs:
         script: |
           echo "Conectado a la VM. Ejecutando comandos kubectl..."
           cd /home/projects/k8s/app1 # O el directorio donde tienes tus archivos de Kubernetes
-          kubectl --kubeconfig config.gcp apply -f deployment-app.yaml # Ejemplo: aplicar un deployment
-          kubectl --kubeconfig config.gcp get pods # Ejemplo: obtener la lista de pods
-          # Añade aquí todos los comandos kubectl que necesites ejecutar
+          microk8s status
 
     - name: Notify Slack on success
       if: success()
