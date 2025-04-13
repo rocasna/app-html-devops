@@ -80,8 +80,7 @@ jobs:
           which microk8s
           which kubectl
           cd /home/projects/k8s/app1
-          microk8s kubectl get deployment
-          # kubectl get deployment # Si también tienes kubectl estándar
+          kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
 
     - name: Notify Slack on success
       if: success()
