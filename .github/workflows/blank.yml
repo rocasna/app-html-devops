@@ -75,11 +75,13 @@ jobs:
         script: |
           echo "Conectado a la VM. Ejecutando comandos kubectl..."
           echo "Current PATH: $PATH"
+          export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
+          echo "Updated PATH: $PATH"
           which microk8s
           which kubectl
           cd /home/projects/k8s/app1
-          microk8s kubectl get deployment # Intenta con la sintaxis correcta
-          # kubectl get deployment # Intenta con el comando estándar
+          microk8s kubectl get deployment
+          # kubectl get deployment # Si también tienes kubectl estándar
 
     - name: Notify Slack on success
       if: success()
