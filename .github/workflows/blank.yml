@@ -41,29 +41,29 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-    # - name: Move cache
-    #   run: |
-    #     rm -rf /tmp/.buildx-cache
-    #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-    # - name: Build and scan image
-    #   uses: dentsusoken/build-and-scan-image@main
-    #   with:
-    #     tag: "rcastro95/app-html-devops:${{ github.sha }}"
-    #     path: "."
-    #     dockerfile: "Dockerfile"
-    #     hadolint-enable: "true"
-    #     hadolint-version: "2.8.0"
-    #     hadolint-severity: "info"
-    #     dockle-enable: "true"
-    #     dockle-version: "0.4.3"
-    #     dockle-severity: "WARN"
-    #     trivy-enable: "true"
-    #     trivy-version: "0.23.0"
-    #     trivy-severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
-    #     trivy-vuln-type: "os,library"
-    #     trivy-ignore-unfixed: "false"
-    #     snyk-enable: "false"
+    - name: Build and scan image
+      uses: dentsusoken/build-and-scan-image@main
+      with:
+        tag: "rcastro95/app-html-devops:${{ github.sha }}"
+        path: "."
+        dockerfile: "Dockerfile"
+        hadolint-enable: "true"
+        hadolint-version: "2.8.0"
+        hadolint-severity: "info"
+        dockle-enable: "true"
+        dockle-version: "0.4.3"
+        dockle-severity: "WARN"
+        trivy-enable: "true"
+        trivy-version: "0.23.0"
+        trivy-severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+        trivy-vuln-type: "os,library"
+        trivy-ignore-unfixed: "false"
+        snyk-enable: "false"
 
     - name: Execute kubectl commands
       uses: appleboy/ssh-action@v1.0.0
@@ -77,11 +77,9 @@ jobs:
           echo "Current PATH: $PATH"
           export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
           echo "Updated PATH: $PATH"
-          which microk8s
-          which kubectl
-          cd /home/projects/k8s/app1
-          sleep 10
-          microk8s kubectl config current-context # Verifica el contexto dentro de la acción
+          cd /home/projects/k8s/app-html-devops
+          whoami
+          git pull
           microk8s.kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:${{ github.sha }}
 
     - name: Notify Slack on success
