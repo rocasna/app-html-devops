@@ -25,6 +25,8 @@ spec:
         image: rcastro95/app-html-devops:83fc7738420db0511751de1daea510ff8a930978
         ports:
         - containerPort: 80
+        securityContext:
+          runAsUser: 0  # 👈 Ejecutar como root
   strategy:
     type: RollingUpdate
     rollingUpdate:
