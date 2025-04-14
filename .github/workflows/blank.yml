@@ -76,10 +76,11 @@ jobs:
           echo "Conectado a la VM. Ejecutando comandos kubectl..."
           export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
           echo "Updated PATH: $PATH"
-          cd /home/projects/k8s/app1
+          cd /home/projects/k8s
           microk8s kubectl config current-context # Verifica el contexto dentro de la acción
           microk8s kubectl get deployment -n default app-html-devops-deployment
-          microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:c1f669099a9b7917676f13e7ecb304bfd2d882cb
+          ./k8s-deploy.sh
+          #microk8s kubectl set image deployment.v1.apps/app-html-devops-deployment app-html-devops=rcastro95/app-html-devops:c1f669099a9b7917676f13e7ecb304bfd2d882cb
 
     - name: Notify Slack on success
       if: success()
