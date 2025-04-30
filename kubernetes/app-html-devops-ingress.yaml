@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: app-html-devops-ingress
   labels:
-    app: app-html
+    app: html
     dep: devops
     env: dev
   annotations:

@@ -3,20 +3,20 @@ kind: Deployment
 metadata:
   name: app-html-devops-deployment
   labels:
-    app: app-html
+    app: html
     dep: devops
     env: dev
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: app-html
+      app: html
       dep: devops
       env: dev
   template:
     metadata:
       labels:
-        app: app-html
+        app: html
         dep: devops
         env: dev
     spec:

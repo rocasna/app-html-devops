@@ -4,7 +4,7 @@ metadata:
   name: app-html-devops-service
 spec:
   selector:
-    app: app-html
+    app: html
     dep: devops
     env: dev
   ports:
