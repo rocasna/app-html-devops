@@ -1,0 +1,13 @@
+---
+- name: Listamos proytecto
+  hosts: dev-servers
+  become: yes  # Asegúrate de tener privilegios de root
+
+  tasks:
+    - name: Listar ruta de proyectos
+      shell: "ls -al /home/projects/k8s/app-html-devops"
+      register: listar
+
+    - name: Mostrar salida de listado
+      debug:
+        var: listar.stdout_lines

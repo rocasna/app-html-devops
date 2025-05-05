@@ -1,0 +1,7 @@
+#Este archivo de inventario contiene la lista de hosts que Ansible administrará en tu entorno de desarrollo.
+#Puedes especificar las direcciones IP o los nombres de host de los servidores que has desplegado con Terraform en esta sección.
+[bastion-servers]
+#vm-bastion
+[dev-servers]
+#vm
+34.34.180.164

@@ -1,0 +1,11 @@
+- name: List all disks on the system
+  hosts: all
+  tasks:
+    - name: Gather facts about disks
+      ansible.builtin.setup:
+        filter: "ansible_devices"
+      register: disk_info
+
+    - name: Display disk information
+      debug:
+        var: disk_info
