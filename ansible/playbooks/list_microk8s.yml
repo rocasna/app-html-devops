@@ -1,0 +1,22 @@
+- name: Instalar MicroK8s y configurar usuario
+  hosts: dev-servers
+  become: yes
+  tasks:
+    - name: Instalar snapd
+      apt: name=snapd state=present
+
+    - name: Instalar microk8s
+      snap:
+        name: microk8s
+        classic: yes
+        state: present
+
+    - name: Agregar usuario al grupo microk8s
+      user:
+        name: "{{ ansible_user }}"
+        groups: microk8s
+        append: yes
+
+    - name: Habilitar complementos comunes
+      shell: |
+        /snap/bin/microk8s enable dns ingress storage

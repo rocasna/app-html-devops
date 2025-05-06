@@ -1,39 +1,14 @@
----
-- name: Instalamos servicios por defecto
+- name: Instalar utilidades base
   hosts: dev-servers
   become: yes
   tasks:
-    - name: Actualizar la lista de paquetes
+    - name: Instalar herramientas útiles
       apt:
+        name:
+          - htop
+          - git
+          - curl
+          - wget
+          - unzip
+        state: present
         update_cache: yes
-
-    - name: Instalar Git
-      apt:
-        name: git
-        state: present
-
-    - name: Instalar Htop
-      apt:
-        name: htop
-        state: present
-
-    - name: Instalar Wget
-      apt:
-        name: wget
-        state: present
-
-    - name: Instalar Curl
-      apt:
-        name: curl
-        state: present
-
-    - name: Instalar snapd si no está presente
-      apt:
-        name: snapd
-        state: present
-
-    - name: Instalar Microk8s
-      snap:
-        name: microk8s
-        state: present
-        classic: yes
