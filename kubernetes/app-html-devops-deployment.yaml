@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-html-devops-deployment
-  namespace: production-deployment
+  namespace: default
   labels:
     app: html
     dep: devops
