@@ -1,0 +1,16 @@
+---
+- name: Lanzar comandos de k8s
+  hosts: dev-servers
+  become: yes
+
+  tasks:
+    - name: Lanzar comandos de k8s
+      shell: |
+        /snap/bin/microk8s kubectl create namespace test-production-deployment
+        /snap/bin/microk8s kubectl create namespace production-deployment
+        /snap/bin/microk8s kubectl get namespace
+      register: listar
+      
+    - name: Mostrar salida de listado
+      debug:
+        var: listar.stdout_lines
