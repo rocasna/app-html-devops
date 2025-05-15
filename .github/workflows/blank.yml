@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
     paths:
       - 'app/**'
+      - 'kubernetes/**'
 
 jobs:
   build:
