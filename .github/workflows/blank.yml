@@ -6,7 +6,7 @@ on:
     paths:
       - 'app/**'
       - 'kubernetes/**'
-      - 'Dockerfile'
+      - 'dockerfile_*'
       - '.github/**'
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: Dockerfile
+        file: dockerfile_nginx
         push: true
         tags: |
           rcastro95/app-html-devops:latest
@@ -56,7 +56,7 @@ jobs:
       with:
         tag: "rcastro95/app-html-devops:${{ github.sha }}"
         path: "."
-        dockerfile: "Dockerfile"
+        dockerfile: "dockerfile_nginx"
         hadolint-enable: "true"
         hadolint-version: "2.8.0"
         hadolint-severity: "info"
