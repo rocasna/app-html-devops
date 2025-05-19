@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-html-devops-deployment
-  namespace: default
+  namespace: test-production-deployment
   labels:
     app: html
     dep: devops
@@ -28,17 +28,22 @@ spec:
         - containerPort: 80
         securityContext:
           runAsUser: 0
-        # args:
-        # - /bin/sh
-        # - -c
-        # - touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 90
-        # livenessProbe:
-        #   exec:
-        #     command:
-        #     - cat
-        #     - /tmp/healthy
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
   strategy:
     type: RollingUpdate
     rollingUpdate:

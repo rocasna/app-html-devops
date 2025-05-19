@@ -3,6 +3,7 @@ FROM nginx:stable-alpine3.20-slim
 ENV DOCKER_CONTENT_TRUST=1
 
 COPY ./app/* /usr/share/nginx/html/
+COPY ./config/default.conf /etc/nginx/conf.d/default.conf
 
 RUN addgroup -g 1000 github_action \
     && adduser -u 1000 -G github_action -s /sbin/nologin -D github_action

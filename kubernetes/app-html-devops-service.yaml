@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: app-html-devops-service
-  namespace: default
+  namespace: test-production-deployment
 spec:
   selector:
     app: html
