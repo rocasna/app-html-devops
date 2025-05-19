@@ -1,0 +1,29 @@
+FROM php:8.3.21-fpm-alpine3.20
+
+# Seguridad: confiar en contenido firmado
+ENV DOCKER_CONTENT_TRUST=1
+
+# Instalar dependencias necesarias (solo si usas extensiones extra)
+RUN apk add --no-cache curl bash
+
+# Crear usuario no root
+RUN addgroup -g 1000 github_action \
+    && adduser -u 1000 -G github_action -s /sbin/nologin -D github_action
+
+# Copiar el código fuente de la app
+COPY ./app /var/www/html
+
+# Asignar permisos adecuados
+RUN chown -R github_action:github_action /var/www/html
+
+# Establecer el directorio de trabajo
+WORKDIR /var/www/html
+
+# Cambiar a usuario no root
+USER github_action
+
+# Exponer el puerto (usado internamente por PHP-FPM, no directamente accesible)
+EXPOSE 9000
+
+# Iniciar PHP-FPM (modo foreground)
+CMD ["php-fpm"]

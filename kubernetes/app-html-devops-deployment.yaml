@@ -44,6 +44,11 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
+
+      - name: app-php-devops
+        image: rcastro95/app-html-devops:83fc7738420db0511751de1daea510ff8a930978
+        ports:
+        - containerPort: 9000
   strategy:
     type: RollingUpdate
     rollingUpdate:
