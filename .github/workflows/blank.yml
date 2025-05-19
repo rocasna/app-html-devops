@@ -6,6 +6,8 @@ on:
     paths:
       - 'app/**'
       - 'kubernetes/**'
+      - 'Dockerfile'
+      - '.github/**'
 
 jobs:
   build:
