@@ -33,9 +33,3 @@ spec:
         image: rcastro95/app-php-devops:29a025e7132dac9a87ef9b27168f25c58e9636e2
         ports:
         - containerPort: 9000
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-      
