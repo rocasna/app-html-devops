@@ -28,25 +28,9 @@ spec:
         - containerPort: 80
         securityContext:
           runAsUser: 0
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
 
       - name: app-php-devops
-        image: rcastro95/app-html-devops:83fc7738420db0511751de1daea510ff8a930978
+        image: rcastro95/app-php-devops:29a025e7132dac9a87ef9b27168f25c58e9636e2
         ports:
         - containerPort: 9000
   strategy:
