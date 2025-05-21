@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-html-devops-deployment
+  name: app-php-devops-deployment
   namespace: test-production-deployment
   labels:
-    app: html
+    app: php
     dep: devops
     env: dev
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: html
+      app: php
       dep: devops
       env: dev
   template:
     metadata:
       labels:
-        app: html
+        app: php
         dep: devops
         env: dev
     spec:
       containers:
-      - name: app-html-devops
-        image: rcastro95/app-html-devops:base2
+      - name: app-php-devops
+        image: rcastro95/app-php-devops:base2
         ports:
-        - containerPort: 80
+        - containerPort: 9000
         securityContext:
           runAsUser: 0
   strategy:

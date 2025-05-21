@@ -5,7 +5,7 @@
 
   tasks:
     - name: Listar componentes de k8s
-      shell: "/snap/bin/microk8s kubectl get all"
+      shell: "/snap/bin/microk8s kubectl get all --namespace=test-production-deployment"
       register: listar
       
     - name: Mostrar salida de listado
