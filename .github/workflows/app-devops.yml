@@ -82,12 +82,12 @@ jobs:
           echo "Current PATH: $PATH"
           export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
           echo "Updated PATH: $PATH"
-          cd /home/projects/k8s/app-php-devops
+          cd /home/projects/k8s/app-html-devops
           whoami
           git pull
           /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
           /snap/bin/microk8s kubectl get all
-          microk8s.kubectl set image deployment.v1.apps/app-php-devops-deployment --namespace=test-production-deployment app-php-devops=rcastro95/app-php-devops:${{ github.sha }}
+          microk8s.kubectl set image deployment.v1.apps/app-html-devops-deployment --namespace=test-production-deployment app-nginx-devops=rcastro95/app-nginx-devops:${{ github.sha }}
           /snap/bin/microk8s kubectl get all
 
     - name: Notify Slack on success
