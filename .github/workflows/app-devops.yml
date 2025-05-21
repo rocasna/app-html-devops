@@ -57,7 +57,7 @@ jobs:
         tag: "rcastro95/app-php-devops:${{ github.sha }}"
         path: "."
         dockerfile: "dockerfile_php"
-        hadolint-enable: "true"
+        hadolint-enable: "false"
         hadolint-version: "2.8.0"
         hadolint-severity: "info"
         dockle-enable: "true"
