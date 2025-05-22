@@ -69,4 +69,4 @@ jobs:
             "text": ":x: *¡Fallo en despliegue de HTML/NGINX!* :boom:\n\n*Tag:* `${{ steps.tag.outputs.tag }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}  
