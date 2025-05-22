@@ -1,4 +1,4 @@
-name: Build and push Docker image to Docker Hub
+name: Pull changes on VM and notify Slack
 
 on:
   push:
@@ -7,14 +7,20 @@ on:
       - '**'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Execute pull
+    - name: Get tag or commit
+      id: tag
+      run: |
+        TAG=$(git describe --tags --always)
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+    - name: Pull latest changes on remote VM
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
@@ -22,10 +28,7 @@ jobs:
         key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
         port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
         script: |
-          echo "Conectado a la VM. Ejecutando comandos kubectl..."
-          echo "Current PATH: $PATH"
-          export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
-          echo "Updated PATH: $PATH"
+          echo "Conectado a la VM. Ejecutando git pull..."
           cd /home/projects/k8s/app-html-devops
           git pull
 
@@ -35,7 +38,7 @@ jobs:
       with:
         payload: |
           {
-            "text": ":rocket: *¡Nueva imagen Docker publicada!* :whale:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.tag.outputs.tag }}|🔍 Ver commit>\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
+            "text": ":white_check_mark: *Pull ejecutado en la VM*\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag o commit:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|🔍 Ver commit>\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -46,7 +49,7 @@ jobs:
       with:
         payload: |
           {
-            "text": ":x: *¡El workflow falló!* :boom:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
+            "text": ":x: *Falló el pull en la VM*\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag o commit:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
