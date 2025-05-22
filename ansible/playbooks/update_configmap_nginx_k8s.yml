@@ -6,7 +6,11 @@
   tasks:
     - name: Lanzar comandos de k8s
       shell: |
-        /snap/bin/microk8s kubectl apply -f kubernetes/app-project-devops-configmap-nginx.yaml
+        cd /home/projects/k8s/app-html-devops/kubernetes
+        /snap/bin/microk8s.kubectl apply -f app-project-devops-configmap-nginx.yaml
+        /snap/bin/microk8s.kubectl rollout restart deployment/app-html-devops-deployment -n test-production-deployment
+        /snap/bin/microk8s.kubectl rollout restart deployment/app-php-devops-deployment -n test-production-deployment
+
       register: listar
       
     - name: Mostrar salida de listado
