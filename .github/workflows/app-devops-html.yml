@@ -47,7 +47,7 @@ jobs:
           cd /home/projects/k8s/app-html-devops/
           git pull
           /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
-          microk8s.kubectl set image deployment/app-html-devops-deployment --namespace=test-production-deployment app-html-devops=rcastro95/app-html-devops:${{ steps.tag.outputs.tag }}
+          microk8s.kubectl set image deployment/app-html-devops-deployment -n test-production-deployment app-html-devops=rcastro95/app-html-devops:${{ steps.tag.outputs.tag }}
 
     - name: Notify Slack on success
       if: success()
