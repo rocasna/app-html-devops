@@ -1,0 +1,108 @@
+name: Build and push Docker image to Docker Hub
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'kubernetes/**'
+      - 'dockerfile_nginx'
+      - '.github/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ steps.tag.outputs.tag }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: dockerfile_nginx
+        push: true
+        tags: |
+          rcastro95/app-html-devops:${{ steps.tag.outputs.tag }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+    - name: Build and scan image
+      uses: dentsusoken/build-and-scan-image@main
+      with:
+        tag: "rcastro95/app-php-devops:${{ steps.tag.outputs.tag }}"
+        path: "."
+        dockerfile: "dockerfile_php"
+        hadolint-enable: "false"
+        hadolint-version: "2.8.0"
+        hadolint-severity: "info"
+        dockle-enable: "false"
+        dockle-version: "0.4.3"
+        dockle-severity: "WARN"
+        trivy-enable: "false"
+        trivy-version: "0.23.0"
+        trivy-severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+        trivy-vuln-type: "os,library"
+        trivy-ignore-unfixed: "false"
+        snyk-enable: "false"
+
+    - name: Execute kubectl commands
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
+        username: ${{ secrets.GCP_VM_USERNAME }}
+        key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+        port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+        script: |
+          echo "Conectado a la VM. Ejecutando comandos kubectl..."
+          echo "Current PATH: $PATH"
+          export PATH="$PATH:/snap/bin" # Añade el directorio de Snap
+          echo "Updated PATH: $PATH"
+          cd /home/projects/k8s/app-html-devops
+          git pull
+          /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
+          microk8s.kubectl set image deployment.v1.apps/app-html-devops-deployment --namespace=test-production-deployment app-html-devops=rcastro95/app-nginx-devops:base:${{ steps.tag.outputs.tag }}
+
+    - name: Notify Slack on success
+      if: success()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": ":rocket: *¡Nueva imagen Docker publicada!* :whale:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.tag.outputs.tag }}|🔍 Ver commit>\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: Notify Slack on failure
+      if: failure()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": ":x: *¡El workflow falló!* :boom:\n\n*Repositorio:* `${{ github.repository }}`\n*Branch:* `${{ github.ref_name }}`\n*Autor:* `${{ github.actor }}`\n*Tag:* `${{ steps.tag.outputs.tag }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver logs del workflow>"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
