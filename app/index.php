@@ -1,5 +1,7 @@
 <?php
-echo '
+$pod_name = getenv("POD_NAME");
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,7 +42,8 @@ echo '
     </header>
 
     <main>
-        <p>Versión de la app: v2.1.13</p>
+        <p>Versión de la app: v2.1.14</p>
+        <p>El nombre del pod es: <?php echo htmlspecialchars($pod_name); ?></p>
     </main>
 
     <footer>
@@ -48,6 +51,3 @@ echo '
     </footer>
 </body>
 </html>
-
-';
-?>
