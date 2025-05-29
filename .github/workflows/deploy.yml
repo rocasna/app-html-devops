@@ -33,16 +33,23 @@ jobs:
         DEPLOY_PHP=false
         DEPLOY_NGINX=false
 
-        if echo "$CHANGED" | grep -qE '^app/|dockerfile_php'; then
+        # Si hay cambios en app, config o kubernetes, activa ambos despliegues
+        if echo "$CHANGED" | grep -qE '^(app/|config/|kubernetes/)'; then
           DEPLOY_PHP=true
-        fi
-
-        if echo "$CHANGED" | grep -qE '^config/|dockerfile_nginx'; then
           DEPLOY_NGINX=true
+        else
+          # Opcional: si quieres detectar cambios específicos para cada uno
+          if echo "$CHANGED" | grep -qE '^dockerfile_php'; then
+            DEPLOY_PHP=true
+          fi
+          if echo "$CHANGED" | grep -qE '^dockerfile_nginx'; then
+            DEPLOY_NGINX=true
+          fi
         fi
 
         echo "php=$DEPLOY_PHP" >> $GITHUB_OUTPUT
         echo "nginx=$DEPLOY_NGINX" >> $GITHUB_OUTPUT
+
 
   build-php:
     needs: prepare
