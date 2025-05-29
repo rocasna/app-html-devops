@@ -54,7 +54,7 @@ jobs:
     if: needs.prepare.outputs.deploy_php == 'true'
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      status: ${{ steps.status.outputs.status }}
     steps:
       - uses: actions/checkout@v4
 
@@ -87,22 +87,22 @@ jobs:
             /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
             /snap/bin/microk8s kubectl set image deployment/app-php-devops-deployment --namespace=test-production-deployment app-php-devops=rcastro95/app-php-devops:${{ needs.prepare.outputs.tag }}
 
-      - name: Set status on success
-        if: ${{ success() }}
-        id: set_status
-        run: echo "status=success" >> $GITHUB_OUTPUT
-
-      - name: Set status on failure
-        if: ${{ failure() }}
-        id: set_status
-        run: echo "status=failure" >> $GITHUB_OUTPUT
+      - name: Set job status output
+        id: status
+        if: ${{ always() }}
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+          fi
 
   build-nginx:
     needs: prepare
     if: needs.prepare.outputs.deploy_nginx == 'true'
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      status: ${{ steps.status.outputs.status }}
     steps:
       - uses: actions/checkout@v4
 
@@ -135,15 +135,15 @@ jobs:
             /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
             /snap/bin/microk8s kubectl set image deployment/app-html-devops-deployment -n test-production-deployment app-html-devops=rcastro95/app-html-devops:${{ needs.prepare.outputs.tag }}
 
-      - name: Set status on success
-        if: ${{ success() }}
-        id: set_status
-        run: echo "status=success" >> $GITHUB_OUTPUT
-
-      - name: Set status on failure
-        if: ${{ failure() }}
-        id: set_status
-        run: echo "status=failure" >> $GITHUB_OUTPUT
+      - name: Set job status output
+        id: status
+        if: ${{ always() }}
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+          fi
 
   notify:
     needs: [prepare, build-php, build-nginx]
