@@ -23,9 +23,10 @@ jobs:
     - name: Detect changed files
       id: changes
       run: |
-        git fetch origin master
-        BASE=$(git merge-base origin/master $GITHUB_SHA)
-        CHANGED=$(git diff --name-only $BASE $GITHUB_SHA)
+        git fetch --depth=2 origin
+
+        PARENT=$(git rev-parse $GITHUB_SHA^)
+        CHANGED=$(git diff --name-only $PARENT $GITHUB_SHA)
 
         echo "Changed files:"
         echo "$CHANGED"
@@ -33,12 +34,10 @@ jobs:
         DEPLOY_PHP=false
         DEPLOY_NGINX=false
 
-        # Si hay cambios en app, config o kubernetes, activa ambos despliegues
         if echo "$CHANGED" | grep -qE '^(app/|config/|kubernetes/)'; then
           DEPLOY_PHP=true
           DEPLOY_NGINX=true
         else
-          # Opcional: si quieres detectar cambios específicos para cada uno
           if echo "$CHANGED" | grep -qE '^dockerfile_php'; then
             DEPLOY_PHP=true
           fi
@@ -49,6 +48,7 @@ jobs:
 
         echo "php=$DEPLOY_PHP" >> $GITHUB_OUTPUT
         echo "nginx=$DEPLOY_NGINX" >> $GITHUB_OUTPUT
+
 
 
   build-php:
