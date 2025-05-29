@@ -40,11 +40,11 @@ echo '
     </header>
 
     <main>
-        <p>Versión de la app: v2.0</p>
+        <p>Versión de la app: v2.1.1</p>
     </main>
 
     <footer>
-        <p>&copy; 2025 - DevOps - :D </p>
+        <p>&copy; 2025 - DevOps </p>
     </footer>
 </body>
 </html>
