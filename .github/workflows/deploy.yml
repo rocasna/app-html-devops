@@ -13,127 +13,149 @@ jobs:
       deploy_nginx: ${{ steps.changes.outputs.nginx }}
       tag: ${{ steps.tag.outputs.tag }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Get tag name
-      id: tag
-      run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Get tag name
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-    - name: Detect changed files
-      id: changes
-      run: |
-        git fetch --depth=2 origin
+      - name: Detect changed files
+        id: changes
+        run: |
+          git fetch --depth=2 origin
 
-        PARENT=$(git rev-parse $GITHUB_SHA^)
-        CHANGED=$(git diff --name-only $PARENT $GITHUB_SHA)
+          PARENT=$(git rev-parse $GITHUB_SHA^)
+          CHANGED=$(git diff --name-only $PARENT $GITHUB_SHA)
 
-        echo "Changed files:"
-        echo "$CHANGED"
+          echo "Changed files:"
+          echo "$CHANGED"
 
-        DEPLOY_PHP=false
-        DEPLOY_NGINX=false
+          DEPLOY_PHP=false
+          DEPLOY_NGINX=false
 
-        if echo "$CHANGED" | grep -qE '^(app/|config/|kubernetes/)'; then
-          DEPLOY_PHP=true
-          DEPLOY_NGINX=true
-        else
-          if echo "$CHANGED" | grep -qE '^dockerfile_php'; then
+          if echo "$CHANGED" | grep -qE '^(app/|config/|kubernetes/)'; then
             DEPLOY_PHP=true
-          fi
-          if echo "$CHANGED" | grep -qE '^dockerfile_nginx'; then
             DEPLOY_NGINX=true
+          else
+            if echo "$CHANGED" | grep -qE '^dockerfile_php'; then
+              DEPLOY_PHP=true
+            fi
+            if echo "$CHANGED" | grep -qE '^dockerfile_nginx'; then
+              DEPLOY_NGINX=true
+            fi
           fi
-        fi
 
-        echo "php=$DEPLOY_PHP" >> $GITHUB_OUTPUT
-        echo "nginx=$DEPLOY_NGINX" >> $GITHUB_OUTPUT
-
-
+          echo "php=$DEPLOY_PHP" >> $GITHUB_OUTPUT
+          echo "nginx=$DEPLOY_NGINX" >> $GITHUB_OUTPUT
 
   build-php:
     needs: prepare
     if: needs.prepare.outputs.deploy_php == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.set_status.outputs.status }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-    - name: Build & Push PHP Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: dockerfile_php
-        push: true
-        tags: rcastro95/app-php-devops:${{ needs.prepare.outputs.tag }}
+      - name: Build & Push PHP Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: dockerfile_php
+          push: true
+          tags: rcastro95/app-php-devops:${{ needs.prepare.outputs.tag }}
 
-    - name: Update PHP Deployment
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
-        username: ${{ secrets.GCP_VM_USERNAME }}
-        key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-        port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-        script: |
-          cd /home/projects/k8s/app-html-devops
-          git pull
-          /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
-          /snap/bin/microk8s kubectl set image deployment/app-php-devops-deployment --namespace=test-production-deployment app-php-devops=rcastro95/app-php-devops:${{ needs.prepare.outputs.tag }}
+      - name: Update PHP Deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
+          username: ${{ secrets.GCP_VM_USERNAME }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+          script: |
+            cd /home/projects/k8s/app-html-devops
+            git pull
+            /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
+            /snap/bin/microk8s kubectl set image deployment/app-php-devops-deployment --namespace=test-production-deployment app-php-devops=rcastro95/app-php-devops:${{ needs.prepare.outputs.tag }}
+
+      - name: Set status on success
+        if: ${{ success() }}
+        id: set_status
+        run: echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Set status on failure
+        if: ${{ failure() }}
+        id: set_status
+        run: echo "status=failure" >> $GITHUB_OUTPUT
 
   build-nginx:
     needs: prepare
     if: needs.prepare.outputs.deploy_nginx == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.set_status.outputs.status }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-    - name: Build & Push NGINX Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: dockerfile_nginx
-        push: true
-        tags: rcastro95/app-html-devops:${{ needs.prepare.outputs.tag }}
+      - name: Build & Push NGINX Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: dockerfile_nginx
+          push: true
+          tags: rcastro95/app-html-devops:${{ needs.prepare.outputs.tag }}
 
-    - name: Update NGINX Deployment
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
-        username: ${{ secrets.GCP_VM_USERNAME }}
-        key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-        port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-        script: |
-          cd /home/projects/k8s/app-html-devops
-          git pull
-          /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
-          /snap/bin/microk8s kubectl set image deployment/app-html-devops-deployment -n test-production-deployment app-html-devops=rcastro95/app-html-devops:${{ needs.prepare.outputs.tag }}
+      - name: Update NGINX Deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.GCP_VM_IP_OR_HOSTNAME }}
+          username: ${{ secrets.GCP_VM_USERNAME }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+          script: |
+            cd /home/projects/k8s/app-html-devops
+            git pull
+            /snap/bin/microk8s kubectl config set-context --current --namespace=test-production-deployment
+            /snap/bin/microk8s kubectl set image deployment/app-html-devops-deployment -n test-production-deployment app-html-devops=rcastro95/app-html-devops:${{ needs.prepare.outputs.tag }}
+
+      - name: Set status on success
+        if: ${{ success() }}
+        id: set_status
+        run: echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Set status on failure
+        if: ${{ failure() }}
+        id: set_status
+        run: echo "status=failure" >> $GITHUB_OUTPUT
 
   notify:
     needs: [prepare, build-php, build-nginx]
     runs-on: ubuntu-latest
     if: always()
     steps:
-    - name: Send Slack notification
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        payload: |
-          {
-            "text": ":rocket: *Despliegue ejecutado*\n\n*Tag:* `${{ needs.prepare.outputs.tag }}`\n\nPHP: `${{ needs.prepare.outputs.deploy_php }}`\nNGINX: `${{ needs.prepare.outputs.deploy_nginx }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: *Despliegue ejecutado*\n\n*Tag:* `${{ needs.prepare.outputs.tag }}`\n\nPHP: `${{ needs.build-php.outputs.status || 'not run' }}`\nNGINX: `${{ needs.build-nginx.outputs.status || 'not run' }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|📋 Ver ejecución del workflow>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
