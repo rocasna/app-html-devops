@@ -9,15 +9,22 @@ metadata:
     env: dev
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-http"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - microk8s-app.betaroiup.com
+      secretName: app-html-devops-cert
   rules:
-  - host: microk8s-app.betaroiup.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: app-html-devops-service
-            port:
-              number: 80
+    - host: microk8s-app.betaroiup.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-html-devops-service
+                port:
+                  number: 80

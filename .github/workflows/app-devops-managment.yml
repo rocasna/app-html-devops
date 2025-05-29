@@ -1,10 +1,14 @@
-name: Pull changes on VM and notify Slack
+name: Deploy Management
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
     paths:
-      - '**'
+      - 'ansible/**'
+      - '.github/workflows/app-devops-managment.yml'
+    tags:
+      - 'v*'
 
 jobs:
   deploy:
@@ -14,11 +18,14 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Get tag or commit
+    - name: Extract tag or commit
       id: tag
       run: |
-        TAG=$(git describe --tags --always)
-        echo "tag=$TAG" >> $GITHUB_OUTPUT
+        if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+          echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        fi
 
     - name: Pull latest changes on remote VM
       uses: appleboy/ssh-action@v1.0.0

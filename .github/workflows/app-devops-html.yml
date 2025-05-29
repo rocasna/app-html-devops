@@ -2,8 +2,16 @@ name: Deploy HTML/NGINX
 
 on:
   push:
+    branches:
+      - master
+    paths:
+      - 'app/**'
+      - 'config/**'
+      - 'dockerfile_nginx'
+      - 'kubernetes/**'
+      - '.github/workflows/app-devops-html.yml'
     tags:
-      - 'app-devops-html-v*'
+      - 'v*'
 
 jobs:
   build-and-deploy:
@@ -13,9 +21,14 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Extract tag
+    - name: Extract tag or commit
       id: tag
-      run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      run: |
+        if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+          echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        fi
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
