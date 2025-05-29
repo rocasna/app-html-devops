@@ -40,7 +40,7 @@ echo '
     </header>
 
     <main>
-        <p>Versión de la app: v2.1.3</p>
+        <p>Versión de la app: v2.1.7</p>
     </main>
 
     <footer>
