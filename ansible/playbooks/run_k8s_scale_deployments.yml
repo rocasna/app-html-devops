@@ -6,9 +6,7 @@
   tasks:
     - name: Lanzar comandos de k8s
       shell: |
-        /snap/bin/microk8s kubectl create namespace test-production-deployment
-        /snap/bin/microk8s kubectl create namespace production-deployment
-        /snap/bin/microk8s kubectl get namespace
+        /snap/bin/microk8s kubectl scale deployment app-{{ deploy_name }}-devops-deployment --replicas={{ replicas_number }}
       register: listar
       
     - name: Mostrar salida de listado

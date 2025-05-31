@@ -1,0 +1,14 @@
+---
+- name: Lanzar comandos de k8s
+  hosts: dev-servers
+  become: yes
+
+  tasks:
+    - name: Lanzar comandos de k8s
+      shell: |
+        /snap/bin/microk8s kubectl get {{ resource_k8s }}
+      register: listar
+      
+    - name: Mostrar salida de listado
+      debug:
+        var: listar.stdout_lines
