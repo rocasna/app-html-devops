@@ -42,7 +42,7 @@ $hostname = gethostname();
     </header>
 
     <main>
-        <p>Versión de la app: v2.1.17</p>
+        <p>Versión de la app: v2.1.18</p>
         <p>El nombre del pod: <?php echo htmlspecialchars($hostname); ?></p>
     </main>
 

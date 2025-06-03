@@ -8,12 +8,20 @@
     deployment_php_name: app-html-devops-deployment
 
   tasks:
-    - name: Hacer rollback a la versión anterior
+    - name: Hacer rollback a la versión anterior de html
+      ansible.builtin.command: >
+        /snap/bin/microk8s kubectl rollout undo deployment/{{ deployment_html_name }}
+        -n {{ namespace }}
+      register: rollback_result
+
+    - name: Mostrar resultado del rollback de html
+
+    - name: Hacer rollback a la versión anterior de php
       ansible.builtin.command: >
         /snap/bin/microk8s kubectl rollout undo deployment/{{ deployment_php_name }}
         -n {{ namespace }}
       register: rollback_result
 
-    - name: Mostrar resultado del rollback
+    - name: Mostrar resultado del rollback de php
       debug:
         var: rollback_result.stdout
