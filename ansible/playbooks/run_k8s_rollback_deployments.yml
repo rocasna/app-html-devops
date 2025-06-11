@@ -4,7 +4,7 @@
   become: yes
   vars:
     namespace: test-production-deployment
-    deployment_php_name: app-php-devops-deployment
+    deployment_html_name: app-php-devops-deployment
     deployment_php_name: app-html-devops-deployment
 
   tasks:
@@ -12,16 +12,18 @@
       ansible.builtin.command: >
         /snap/bin/microk8s kubectl rollout undo deployment/{{ deployment_html_name }}
         -n {{ namespace }}
-      register: rollback_result
+      register: rollback_result_html
 
     - name: Mostrar resultado del rollback de html
+      debug:
+        var: rollback_result_html.stdout
 
     - name: Hacer rollback a la versión anterior de php
       ansible.builtin.command: >
         /snap/bin/microk8s kubectl rollout undo deployment/{{ deployment_php_name }}
         -n {{ namespace }}
-      register: rollback_result
+      register: rollback_result_php
 
     - name: Mostrar resultado del rollback de php
       debug:
-        var: rollback_result.stdout
+        var: rollback_result_php.stdout

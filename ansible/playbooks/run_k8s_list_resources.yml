@@ -2,6 +2,8 @@
 - name: Lanzar comandos de k8s
   hosts: dev-servers
   become: yes
+  vars:
+    resource_k8s: all
 
   tasks:
     - name: Lanzar comandos de k8s
